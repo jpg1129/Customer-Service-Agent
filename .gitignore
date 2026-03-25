@@ -1,0 +1,30 @@
+# Environment
+.env
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Testing
+.pytest_cache/
+
+# Claude
+CLAUDE.md
+.claude/
+
+# IDE
+.vscode/
+.idea/
+
+# Internal docs (planning artifacts, not deliverables)
+docs/
+
+# OS
+.DS_Store
+
+# Build
+*.egg-info/
+dist/
+build/
