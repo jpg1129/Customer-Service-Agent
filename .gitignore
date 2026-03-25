@@ -28,3 +28,8 @@ docs/
 *.egg-info/
 dist/
 build/
+
+# Conversion scripts and generated PDF (DESIGN_DOC.html is a deliverable, keep tracked)
+convert_to_pdf.py
+convert_to_html.py
+DESIGN_DOC.pdf

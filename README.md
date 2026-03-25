@@ -27,7 +27,8 @@ cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
 # 4. Launch the web UI
-streamlit run bookly/app.py
+streamlit run bookly/app.py        # if using pip
+uv run streamlit run bookly/app.py # if using uv
 ```
 
 Open the URL shown in the terminal (typically `http://localhost:8501`).
