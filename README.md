@@ -83,35 +83,45 @@ DESIGN_DOC.md   One-page architecture & design document
 ## Architecture
 
 ```
-                        User Message
-                             |
-                             v
-+----------------------------------------------------+
-|            LangGraph Agent (StateGraph)             |
-|                                                     |
-|  System Prompt ──> LLM (GPT-4o) ──> Route          |
-|                                   /       \         |
-|                             Respond       Call Tool |
-|                                |              |     |
-|                                v              v     |
-|                               END      Tool Executor|
-|                                          (gated)    |
-|                                              |      |
-|                                   Result ────+      |
-|                                      |              |
-|                                      v              |
-|                              Back to LLM ───> ...   |
-|                                                     |
-|  Memory: InMemorySaver (conversation persistence)   |
-+----------------------------------------------------+
-                             |
-                             v
-                 Mock Database (orders, policies)
+                          User Message
+                               |
+                               v
++--------------------------------------------------------------+
+|                    LangGraph StateGraph                       |
+|                                                               |
+|                    +------------------+                        |
+|   START ────────>  |  "agent" node   |  <──────────────+      |
+|                    |  (LLM + system  |                 |      |
+|                    |   prompt)       |                 |      |
+|                    +--------+--------+                 |      |
+|                             |                          |      |
+|                      tools_condition                   |      |
+|                       /          \                     |      |
+|                      /            \                    |      |
+|              no tool call      tool call               |      |
+|                    |               |                   |      |
+|                    v               v                   |      |
+|                   END      +------------------+        |      |
+|                (respond)   |  "tools" node   |  ──────+      |
+|                            |  (Tool Executor)|   result       |
+|                            +--------+--------+                |
+|                                     |                         |
+|                                     v                         |
+|                              Mock Database                    |
+|                           (orders, policies)                  |
+|                                                               |
+|   Memory: InMemorySaver (conversation persistence)            |
++--------------------------------------------------------------+
 ```
 
-**Tools:** `lookup_order` (read-only), `check_return_eligibility` (read-only), `initiate_return` (irreversible, gated), `search_policy` (read-only)
+| Tool                       | Type             | Purpose                                           |
+| -------------------------- | ---------------- | ------------------------------------------------- |
+| `lookup_order`             | Read-only        | Retrieve order status, tracking, and item details |
+| `check_return_eligibility` | Read-only        | Per-item eligibility check with denial reasons    |
+| `initiate_return`          | **Irreversible** | Execute a return and issue a refund               |
+| `search_policy`            | Read-only        | Keyword search across policy documentation        |
 
-**Key guardrail:** `initiate_return` is irreversible. The agent must (1) check eligibility, (2) show the customer exactly what will be returned and how much they'll be refunded, and (3) receive explicit confirmation before executing. A programmatic gate (`ELIGIBILITY_VERIFIED`) enforces the prerequisite chain at the code level regardless of LLM behavior.
+**Key guardrail:** `initiate_return` is the only tool that modifies state. The agent must (1) check eligibility, (2) present the return summary and refund amount, and (3) receive explicit confirmation before executing. A programmatic gate (`ELIGIBILITY_VERIFIED`) enforces the prerequisite chain at the code level regardless of LLM behavior.
 
 ## Running Tests
 
