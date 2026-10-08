@@ -1,6 +1,6 @@
 # Bookly Customer Support Agent
 
-An AI-powered customer support agent for **Bookly**, a fictional online bookstore. Built with LangGraph and GPT-4o, featuring a ReAct reasoning loop, multi-step return workflows with confirmation gates, and a Streamlit web interface with real-time tool call transparency.
+An AI-powered customer support agent for **Bookly**, a fictional online bookstore. Built with LangGraph and GPT-4o, featuring a multi-step return workflows with confirmation gates, and a Streamlit web interface with real-time tool call transparency.
 
 > See [DESIGN_DOC.md](./DESIGN_DOC.md) for architecture decisions, conversation design rationale, and production readiness analysis.
 
